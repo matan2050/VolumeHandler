@@ -40,7 +40,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Filters\ConvolutionFilter.cs" />
+    <Compile Include="Filters\Filter.cs" />
     <Compile Include="Core\Volume.cs" />
+    <Compile Include="Filters\FilterParameters.cs" />
     <Compile Include="Readers\VolumeReaderAbstract.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Readers\VolumeReaderRaw.cs" />

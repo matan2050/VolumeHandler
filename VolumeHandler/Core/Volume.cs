@@ -19,13 +19,13 @@ namespace VolumeHandler.Core
 		public Volume(uint _dimX, uint _dimY, uint _dimZ)
 		{
 			InitHeader(_dimX, _dimY, _dimZ);
-			data = new float[DimX, DimY, DimZ];
+			Data = new float[DimX, DimY, DimZ];
 		}
 
 		public Volume(uint _dimX, uint _dimY, uint _dimZ, float[,,] _data)
 		{
 			InitHeader(_dimX, _dimY, _dimZ);
-			data = _data;
+			Data = _data;
 		}
 
 		private void InitHeader(uint _dimX, uint _dimY, uint _dimZ)
