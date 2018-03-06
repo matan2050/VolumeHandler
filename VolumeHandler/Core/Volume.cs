@@ -22,6 +22,12 @@ namespace VolumeHandler.Core
 			Data = new float[DimX, DimY, DimZ];
 		}
 
+		public Volume(Volume copied)
+		{
+			InitHeader(copied.DimX, copied.DimY, copied.DimZ);
+			Data = copied.Data;
+		}
+
 		public Volume(uint _dimX, uint _dimY, uint _dimZ, float[,,] _data)
 		{
 			InitHeader(_dimX, _dimY, _dimZ);
