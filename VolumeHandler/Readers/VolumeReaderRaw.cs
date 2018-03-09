@@ -29,28 +29,42 @@ namespace VolumeHandler.Readers
 			}
 
 			uint dimX, dimY, dimZ;
+      float voxSizeX, voxSizeY, voxSizeZ;
 			float[,,] data;
-			using (StreamReader sr = new StreamReader(Path))
-			{
-				dimX = (uint)sr.Read();
-				dimY = (uint)sr.Read();
-				dimZ = (uint)sr.Read();
+      using (FileStream file = new FileStream(Path, FileMode.Open))
+      {
+        using (BinaryReader reader = new BinaryReader(file))
+        {
+          dimX = (uint)reader.Read();
+          dimY = (uint)reader.Read();
+          dimZ = (uint)reader.Read();
 
-				data = new float[dimX, dimY, dimZ];
+          float mmDimX = (float)reader.Read();
+          float mmDimY = (float)reader.Read();
+          float mmDimZ = (float)reader.Read();
 
-				for (int i = 0; i < dimX; i++)
-				{
-					for (int j = 0; j < dimY; j++)
-					{
-						for (int k = 0; k < dimZ; k++)
-						{
-							data[i, j, k] = (float)sr.Read();
-						}
-					}
-				}
-			} //using
+          voxSizeX = mmDimX / dimX;
+          voxSizeY = mmDimY / dimY;
+          voxSizeZ = mmDimZ / dimZ;
 
-			return new Volume(dimX, dimY, dimZ, data);
+          data = new float[dimX, dimY, dimZ];
+
+          for (int i = 0; i < dimX; i++)
+          {
+            for (int j = 0; j < dimY; j++)
+            {
+              for (int k = 0; k < dimZ; k++)
+              {
+                data[i, j, k] = (float)reader.Read();
+              }
+            }
+          }
+        } //using
+      }
+
+			return new Volume(dimX, dimY, dimZ, 
+        voxSizeX, voxSizeY, voxSizeZ,
+        data);
 		} //ReadVolume
 	}//VolumeReaderRaw
 }//namespace

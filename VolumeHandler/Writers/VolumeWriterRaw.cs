@@ -13,35 +13,42 @@ namespace VolumeHandler.Writers
 	{
 		public VolumeWriterRaw(Volume _vol)
 		{
-			this.vol = _vol;
+			this.Volume = _vol;
 		}
 
-		public override void WriteVolume(string path)
-		{
-			// TODO validate path
+    public override void WriteVolume(string path)
+    {
+      // TODO validate path
 
-			if (vol == null)
-			{
-				throw new NullReferenceException("Volume for export is null");
-			}
+      if (Volume == null)
+      {
+        throw new NullReferenceException("Volume for export is null");
+      }
 
-			using (StreamWriter sw = new StreamWriter(path))
-			{
-				sw.Write(vol.DimX);
-				sw.Write(vol.DimY);
-				sw.Write(vol.DimZ);
+      using (FileStream file = new FileStream(path, FileMode.Create))
+      {
+        using (BinaryWriter writer = new BinaryWriter(file))
+        {
+          writer.Write(Volume.DimX);
+          writer.Write(Volume.DimY);
+          writer.Write(Volume.DimZ);
 
-				for (uint i = 0; i < vol.DimX; i++)
-				{
-					for (uint j = 0; j < vol.DimY; j++)
-					{
-						for (uint k = 0; k < vol.DimZ; k++)
-						{
-							sw.Write(vol.Data[i, j, k]);
-						}
-					}
-				}
-			} //using
+          writer.Write((float)Volume.DimX * Volume.VoxelSizeX);
+          writer.Write((float)Volume.DimY * Volume.VoxelSizeY);
+          writer.Write((float)Volume.DimZ * Volume.VoxelSizeZ);
+
+          for (uint i = 0; i < Volume.DimX; i++)
+          {
+            for (uint j = 0; j < Volume.DimY; j++)
+            {
+              for (uint k = 0; k < Volume.DimZ; k++)
+              {
+                writer.Write(Volume.Data[i, j, k]);
+              }
+            }
+          }
+        } //using
+      }
 		} //WriteVolume
 	} //VolumeWriterRaw
 }
