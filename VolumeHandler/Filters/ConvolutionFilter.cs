@@ -8,31 +8,32 @@ using VolumeHandler.Core;
 
 namespace VolumeHandler.Filters
 {
-	public class ConvolutionFilter
+	public class ConvolutionFilter : FilterBase
 	{
-		public float[,,] Kernel = null; //{ get; private set; }
-		public uint[] KernelSize = null; // { get; private set; }
+		private float[,,] Kernel = null; //{ get; private set; }
 
-		public ConvolutionFilter(float[,,] kernel,
-														 uint sizeX,
-														 uint sizeY,
-														 uint sizeZ)
+		private uint kernelSizeX;
+		private uint kernelSizeY;
+		private uint kernelSizeZ;
+
+		public ConvolutionFilter(uint sizeX, uint sizeY, uint sizeZ)
 		{
-			if (sizeX * sizeY * sizeZ != kernel.Length)
-			{
-				throw new IndexOutOfRangeException("kernel size mismatch");
-			}
-
 			if ((sizeX % 2 == 0) || (sizeY % 2 == 0) ||(sizeZ % 2 == 0))
 			{
 				throw new Exception("Kernel should be of uneven size in all dims");
 			}
 
-			Kernel = kernel;
-			KernelSize = new uint[3] { sizeX, sizeY, sizeZ };
+			kernelSizeX = sizeX;
+			kernelSizeY = sizeY;
+			kernelSizeZ = sizeZ;
 		}
 
-		public Volume RunFilter(Volume vol)
+		public void SetKernel(float[,,] kernel)
+		{
+			this.Kernel = kernel;
+		}
+
+		public override Volume RunFilter(Volume vol)
 		{
 			// TODO implement filter flow
 			if (Kernel == null)
@@ -42,28 +43,28 @@ namespace VolumeHandler.Filters
 
 			var filteredVol = new Volume(vol);
 
-			uint endBoundsX = vol.DimX - KernelSize[0] / 2 + 1;
-			uint endBoundsY = vol.DimY - KernelSize[1] / 2 + 1;
-			uint endBoundsZ = vol.DimZ - KernelSize[2] / 2 + 1;
+			uint endBoundsX = vol.DimX - kernelSizeX / 2 + 1;
+			uint endBoundsY = vol.DimY - kernelSizeY / 2 + 1;
+			uint endBoundsZ = vol.DimZ - kernelSizeZ / 2 + 1;
 
-			for (uint i = KernelSize[0] / 2 + 1; i < endBoundsX; i++)
+			for (uint i = kernelSizeX / 2 + 1; i < endBoundsX; i++)
 			{
-				for (uint j = KernelSize[1] / 2 + 1; j < endBoundsY; j++)
+				for (uint j = kernelSizeY / 2 + 1; j < endBoundsY; j++)
 				{
-					for (uint k = KernelSize[2] / 2 + 1; k < endBoundsZ; k++)
+					for (uint k = kernelSizeZ / 2 + 1; k < endBoundsZ; k++)
 					{
 						float currentVal = 0;
 
-						for (int ii = 0; ii < KernelSize[0]; ii++)
+						for (int ii = 0; ii < kernelSizeX; ii++)
 						{
-							for (int jj = 0; jj < KernelSize[1]; jj++)
+							for (int jj = 0; jj < kernelSizeY; jj++)
 							{
-								for (int kk = 0; kk < KernelSize[2]; kk++)
+								for (int kk = 0; kk < kernelSizeZ; kk++)
 								{
 									currentVal += vol.Data[
-										i - KernelSize[0] / 2 + 1,
-										j - KernelSize[1] / 2 + 1,
-										k - KernelSize[2] / 2 + 1] * Kernel[ii, jj, kk];
+										i - kernelSizeX / 2 + 1,
+										j - kernelSizeY / 2 + 1,
+										k - kernelSizeZ / 2 + 1] * Kernel[ii, jj, kk];
 								}
 							}
 						}
